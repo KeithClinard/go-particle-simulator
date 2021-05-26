@@ -1,9 +1,9 @@
 package main
 
 import (
-	"container/list"
 	"log"
 
+	"github.com/KeithClinard/go-particle-simulator/internal/logic"
 	"github.com/KeithClinard/go-particle-simulator/internal/models"
 	"github.com/KeithClinard/go-particle-simulator/internal/rendering"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -11,20 +11,21 @@ import (
 
 // Game implements ebiten.Game interface.
 type Game struct {
-	sprites   *list.List
 	gameState *models.GameState
 }
 
 // Update proceeds the game state.
 // Update is called every tick (1/60 [s] by default).
 func (game *Game) Update() error {
-	// Write your game's logical update.
+	logic.HandleUserInputs(game.gameState)
+	logic.MoveAllParticles(game.gameState)
 	return nil
 }
 
 // Draw draws the game screen.
 // Draw is called every frame (typically 1/60[s] for 60Hz display).
 func (game *Game) Draw(screen *ebiten.Image) {
+	rendering.DrawParticles(game.gameState, screen)
 	rendering.DrawDebugInfo(game.gameState, screen)
 }
 
@@ -39,9 +40,10 @@ func InitializeGameObject() *Game {
 	ebiten.SetWindowTitle("Particle Simulation")
 	ebiten.SetWindowResizable(true)
 	return &Game{
-		sprites: list.New(),
 		gameState: &models.GameState{
 			ShowDebugInfo: true,
+			Particles:     make([]*models.Particle, 0),
+			Controller:    new(models.Controller),
 		},
 	}
 }
