@@ -15,4 +15,4 @@
 # vendor/
 
 # Debug
-_Debug_*
+__debug_bin

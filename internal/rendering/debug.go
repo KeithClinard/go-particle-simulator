@@ -13,13 +13,18 @@ func DrawDebugInfo(gameState *models.GameState, screen *ebiten.Image) {
 		return
 	}
 	counter := 0
-	// Write your game's rendering.
+
 	drawDebugLineInfo(fmt.Sprintf("TPS: %0.2f", ebiten.CurrentTPS()), screen, &counter)
+	drawDebugLineInfo(fmt.Sprintf("FPS: %0.2f", ebiten.CurrentFPS()), screen, &counter)
 
 	// When the "left mouse button" is pressed...
-	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-		drawDebugLineInfo("You're pressing the 'LEFT' mouse button.", screen, &counter)
+	if gameState.Controller.IsLeftMouseDown {
+		x := gameState.Controller.LeftMouseStartX
+		y := gameState.Controller.LeftMouseStartY
+		drawDebugLineInfo(fmt.Sprintf("You're pressing the 'LEFT' mouse button at %d, %d", x, y), screen, &counter)
 	}
+
+	drawDebugLineInfo(fmt.Sprintf("%d Particles", len(gameState.Particles)), screen, &counter)
 }
 
 func drawDebugLineInfo(debugString string, screen *ebiten.Image, counter *int) {

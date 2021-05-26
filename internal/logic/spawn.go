@@ -5,26 +5,22 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-func SpawnNewParticle(gameState *models.GameState) {
-	wasLeftClickDown := gameState.Controller.IsLeftMouseDown
-	isLeftClickReleased := !ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft)
-	if wasLeftClickDown && isLeftClickReleased {
-		spawnParticleFromState(gameState)
-		gameState.Controller.IsLeftMouseDown = false
-		gameState.Controller.LeftMouseStartX = 0
-		gameState.Controller.LeftMouseStartY = 0
-	}
-}
-
-func spawnParticleFromState(gameState *models.GameState) {
-	x := gameState.Controller.LeftMouseStartX
-	y := gameState.Controller.LeftMouseStartY
+func SpawnNewParticle(x, y int, gameState *models.GameState) {
 	x1, y1 := ebiten.CursorPosition()
 	velX := x1 - x
 	velY := y1 - y
-	spawnParticle(x, y, velX, velY)
+	particle := spawnParticle(float64(x), float64(y), float64(velX), float64(velY))
+	gameState.Particles = append(gameState.Particles, particle)
 }
 
-func spawnParticle(x, y, velX, velY int) {
-	// TODO
+func spawnParticle(x, y, velX, velY float64) *models.Particle {
+	position := &models.Vector{
+		X: x,
+		Y: y,
+	}
+	velocity := &models.Vector{
+		X: velX,
+		Y: velY,
+	}
+	return models.NewParticle(position, velocity)
 }
