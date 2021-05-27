@@ -7,6 +7,7 @@ import (
 
 var minParticleSize float64 = 5
 var maxParticleSize float64 = 100
+var tick float64 = 1.0 / 60.0
 
 type Particle struct {
 	Position     *Vector
@@ -30,7 +31,7 @@ func NewParticle(position *Vector, velocity *Vector) *Particle {
 	return particle
 }
 
-func (particle *Particle) Move(tick float64) {
+func (particle *Particle) Move() {
 	deltaV := particle.Acceleration.Clone().MultiplyScalar(tick)
 	particle.Velocity.Add(*deltaV)
 	deltaP := particle.Velocity.Clone().MultiplyScalar(tick)

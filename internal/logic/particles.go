@@ -4,13 +4,12 @@ import (
 	"github.com/KeithClinard/go-particle-simulator/internal/models"
 )
 
-var gravityPowerConstant = 1000.0
+var gravitationalConstant = 1000.0
 var maxAllowedAcceleration = 100.0
 
 func MoveAllParticles(gameState *models.GameState) {
-	gameTick := 1.0 / 60.0
 	for _, particle := range gameState.Particles {
-		particle.Move(gameTick)
+		particle.Move()
 	}
 }
 
@@ -25,14 +24,14 @@ func ApplyParticleGravity(gameState *models.GameState) {
 				continue
 			}
 			displacement := particle2.Position.Clone().Subtract(*particle1.Position)
-			displacementMagnitude := displacement.Length()
 			displacementDirection := displacement.Clone().Normalize()
-			accelerationMagnitude := particle2.Mass / (displacementMagnitude * displacementMagnitude)
+			massProduct := particle1.Mass * particle2.Mass
+			displacementSquared := displacement.LengthSquared()
+			accelerationMagnitude := (gravitationalConstant * massProduct) / displacementSquared
 
 			acceleration := displacementDirection.MultiplyScalar(accelerationMagnitude)
 			accelerationSum.Add(*acceleration)
 		}
-		accelerationSum.MultiplyScalar(gravityPowerConstant)
 
 		if accelerationSum.Length() > maxAllowedAcceleration {
 			accelerationSum.Normalize().MultiplyScalar(maxAllowedAcceleration)
