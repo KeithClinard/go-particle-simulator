@@ -2,10 +2,12 @@ package logic
 
 import (
 	"github.com/KeithClinard/go-particle-simulator/internal/models"
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 var gravitationalConstant = 1000.0
 var maxAllowedAcceleration = 100.0
+var outOfBoundsBuffer = 100
 
 func MoveAllParticles(gameState *models.GameState) {
 	for _, particle := range gameState.Particles {
@@ -13,7 +15,7 @@ func MoveAllParticles(gameState *models.GameState) {
 	}
 }
 
-func ApplyParticleGravity(gameState *models.GameState) {
+func ApplyGravity(gameState *models.GameState) {
 	for _, particle1 := range gameState.Particles {
 		accelerationSum := &models.Vector{
 			X: 0,
@@ -39,4 +41,28 @@ func ApplyParticleGravity(gameState *models.GameState) {
 
 		particle1.Acceleration = accelerationSum
 	}
+}
+
+func DestroyOutOfBounds(gameState *models.GameState) {
+	width, height := ebiten.WindowSize()
+	minXY := 0 - outOfBoundsBuffer
+	maxX := width + outOfBoundsBuffer
+	maxY := height + outOfBoundsBuffer
+
+	oldParticleList := gameState.Particles
+	newParticleList := oldParticleList[:0]
+
+	for _, particle := range oldParticleList {
+		intX := int(particle.Position.X)
+		intY := int(particle.Position.Y)
+		xOutOfBounds := intX < minXY || intX > maxX
+		yOutOfBounds := intY < minXY || intY > maxY
+		if !(xOutOfBounds || yOutOfBounds) {
+			newParticleList = append(newParticleList, particle)
+		}
+	}
+	for i := len(newParticleList); i < len(oldParticleList); i++ {
+		oldParticleList[i] = nil
+	}
+	gameState.Particles = newParticleList
 }
