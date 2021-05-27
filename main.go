@@ -18,8 +18,9 @@ type Game struct {
 // Update is called every tick (1/60 [s] by default).
 func (game *Game) Update() error {
 	logic.HandleUserInputs(game.gameState)
-	logic.ApplyParticleGravity(game.gameState)
+	logic.ApplyGravity(game.gameState)
 	logic.MoveAllParticles(game.gameState)
+	logic.DestroyOutOfBounds(game.gameState)
 	return nil
 }
 
