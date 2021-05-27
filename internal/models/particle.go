@@ -18,10 +18,13 @@ type Particle struct {
 
 func NewParticle(position *Vector, velocity *Vector) *Particle {
 	particle := &Particle{
-		Position:     position,
-		Velocity:     velocity,
-		Acceleration: new(Vector),
-		Mass:         1,
+		Position: position,
+		Velocity: velocity,
+		Acceleration: &Vector{
+			X: 0,
+			Y: 0,
+		},
+		Mass: 1,
 	}
 	particle.UpdateSize()
 	return particle
