@@ -9,30 +9,33 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-// Game implements ebiten.Game interface.
+var tickCounter uint64 = 0
+
+// Only calculate gravity every N ticks
+// Particles still move between calculations
+// Increase to improve performance at the cost of accuracy
+var gravityFrequencyConstant uint64 = 1
+
 type Game struct {
 	gameState *models.GameState
 }
 
-// Update proceeds the game state.
-// Update is called every tick (1/60 [s] by default).
 func (game *Game) Update() error {
 	logic.HandleUserInputs(game.gameState)
-	logic.ApplyGravity(game.gameState)
+	if tickCounter%gravityFrequencyConstant == 0 {
+		logic.ApplyGravity(game.gameState)
+	}
 	logic.MoveAllParticles(game.gameState)
 	logic.DestroyOutOfBounds(game.gameState)
+	tickCounter++
 	return nil
 }
 
-// Draw draws the game screen.
-// Draw is called every frame (typically 1/60[s] for 60Hz display).
 func (game *Game) Draw(screen *ebiten.Image) {
 	rendering.DrawParticles(game.gameState, screen)
 	rendering.DrawDebugInfo(game.gameState, screen)
 }
 
-// Layout takes the outside size (e.g., the window size) and returns the (logical) screen size.
-// If you don't have to adjust the screen size with the outside size, just return a fixed size.
 func (game *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return outsideWidth, outsideHeight
 }
@@ -52,7 +55,6 @@ func InitializeGameObject() *Game {
 
 func main() {
 	game := InitializeGameObject()
-	// Call ebiten.RunGame to start your game loop.
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}

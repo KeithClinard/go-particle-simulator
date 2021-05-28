@@ -6,66 +6,86 @@ type Vector struct {
 	X, Y float64
 }
 
-func (self *Vector) Add(other Vector) *Vector {
-	self.X += other.X
-	self.Y += other.Y
-	return self
+func (vector *Vector) Add(other Vector) *Vector {
+	vector.X += other.X
+	vector.Y += other.Y
+	return vector
 }
 
-func (self *Vector) AddScalar(other float64) *Vector {
-	self.X += other
-	self.Y += other
-	return self
+func (vector *Vector) AddScalar(other float64) *Vector {
+	vector.X += other
+	vector.Y += other
+	return vector
 }
 
-func (self *Vector) Subtract(other Vector) *Vector {
-	self.X -= other.X
-	self.Y -= other.Y
-	return self
+func (vector *Vector) Subtract(other Vector) *Vector {
+	vector.X -= other.X
+	vector.Y -= other.Y
+	return vector
 }
 
-func (self *Vector) SubtractScalar(other float64) *Vector {
-	self.X -= other
-	self.Y -= other
-	return self
+func (vector *Vector) SubtractScalar(other float64) *Vector {
+	vector.X -= other
+	vector.Y -= other
+	return vector
 }
 
-func (self *Vector) Multiply(other Vector) *Vector {
-	self.X *= other.X
-	self.Y *= other.Y
-	return self
+func (vector *Vector) Multiply(other Vector) *Vector {
+	vector.X *= other.X
+	vector.Y *= other.Y
+	return vector
 }
 
-func (self *Vector) MultiplyScalar(other float64) *Vector {
-	self.X *= other
-	self.Y *= other
-	return self
+func (vector *Vector) MultiplyScalar(other float64) *Vector {
+	vector.X *= other
+	vector.Y *= other
+	return vector
 }
 
-func (self *Vector) Divide(other Vector) *Vector {
-	self.X /= other.X
-	self.Y /= other.Y
-	return self
+func (vector *Vector) Divide(other Vector) *Vector {
+	vector.X /= other.X
+	vector.Y /= other.Y
+	return vector
 }
 
-func (self *Vector) DivideScalar(other float64) *Vector {
-	self.X /= other
-	self.Y /= other
-	return self
+func (vector *Vector) DivideScalar(other float64) *Vector {
+	vector.X /= other
+	vector.Y /= other
+	return vector
 }
 
-func (self *Vector) Normalize() *Vector {
-	return self.DivideScalar(self.Length())
+func (vector *Vector) Normalize() *Vector {
+	return vector.DivideScalar(vector.Length())
 }
 
-func (self Vector) LengthSquared() float64 {
-	return self.X*self.X + self.Y*self.Y
+func (vector *Vector) Reverse() *Vector {
+	vector.X = 0.0 - vector.X
+	vector.Y = 0.0 - vector.Y
+	return vector
 }
 
-func (self Vector) Length() float64 {
-	return math.Sqrt(self.LengthSquared())
+func (vector Vector) LengthSquared() float64 {
+	return vector.X*vector.X + vector.Y*vector.Y
 }
 
-func (self Vector) Clone() *Vector {
-	return &self
+func (vector Vector) Length() float64 {
+	return math.Sqrt(vector.LengthSquared())
+}
+
+func (vector Vector) Clone() *Vector {
+	return &vector
+}
+
+func NewVectorFromAngle(angle, magnitude float64) *Vector {
+	return &Vector{
+		X: magnitude * math.Cos(angle),
+		Y: magnitude * math.Sin(angle),
+	}
+}
+
+func NewVectorFromOrthogonal(angle, magnitude float64) *Vector {
+	return &Vector{
+		X: (0 - magnitude) * math.Sin(angle),
+		Y: magnitude * math.Cos(angle),
+	}
 }

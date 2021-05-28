@@ -8,6 +8,7 @@ import (
 var gravitationalConstant = 1000.0
 var maxAllowedAcceleration = 100.0
 var outOfBoundsBuffer = 100
+var particleSizeDiffConstant = 10.0
 
 func MoveAllParticles(gameState *models.GameState) {
 	for _, particle := range gameState.Particles {
@@ -16,30 +17,43 @@ func MoveAllParticles(gameState *models.GameState) {
 }
 
 func ApplyGravity(gameState *models.GameState) {
-	for _, particle1 := range gameState.Particles {
-		accelerationSum := &models.Vector{
+	for _, particle := range gameState.Particles {
+		particle.Acceleration = &models.Vector{
 			X: 0,
 			Y: 0,
 		}
-		for _, particle2 := range gameState.Particles {
-			if particle1 == particle2 {
-				continue
-			}
+	}
+
+	numParticles := len(gameState.Particles)
+	for i := 0; i < numParticles-1; i++ {
+		particle1 := gameState.Particles[i]
+		for j := i + 1; j < numParticles; j++ {
+			particle2 := gameState.Particles[j]
 			displacement := particle2.Position.Clone().Subtract(*particle1.Position)
-			displacementDirection := displacement.Clone().Normalize()
-			massProduct := particle1.Mass * particle2.Mass
 			displacementSquared := displacement.LengthSquared()
-			accelerationMagnitude := (gravitationalConstant * massProduct) / displacementSquared
+			particle1IsMuchBigger := particle1.Mass/particle2.Mass > particleSizeDiffConstant
+			particle2IsMuchBigger := particle2.Mass/particle1.Mass > particleSizeDiffConstant
 
-			acceleration := displacementDirection.MultiplyScalar(accelerationMagnitude)
-			accelerationSum.Add(*acceleration)
+			if !particle1IsMuchBigger {
+				displacementDirection1 := displacement.Clone().Normalize()
+				accelerationMagnitude1 := (gravitationalConstant * particle2.Mass) / displacementSquared
+				acceleration1 := displacementDirection1.MultiplyScalar(accelerationMagnitude1)
+				particle1.Acceleration.Add(*acceleration1)
+			}
+
+			if !particle2IsMuchBigger {
+				displacementDirection2 := displacement.Clone().Normalize().Reverse()
+				accelerationMagnitude2 := (gravitationalConstant * particle1.Mass) / displacementSquared
+				acceleration2 := displacementDirection2.MultiplyScalar(accelerationMagnitude2)
+				particle2.Acceleration.Add(*acceleration2)
+			}
 		}
+	}
 
-		if accelerationSum.Length() > maxAllowedAcceleration {
-			accelerationSum.Normalize().MultiplyScalar(maxAllowedAcceleration)
+	for _, particle := range gameState.Particles {
+		if particle.Acceleration.Length() > maxAllowedAcceleration {
+			particle.Acceleration.Normalize().MultiplyScalar(maxAllowedAcceleration)
 		}
-
-		particle1.Acceleration = accelerationSum
 	}
 }
 
