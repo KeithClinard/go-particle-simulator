@@ -16,6 +16,16 @@ func HandleUserInputs(gameState *models.GameState) {
 	if !isLeftMousePressed && gameState.Controller.IsLeftMouseDown {
 		onLeftMouseUp(gameState)
 	}
+	isRightMousePressed := ebiten.IsMouseButtonPressed(ebiten.MouseButtonRight)
+
+	// On mouse down
+	if isRightMousePressed && !gameState.Controller.IsRightMouseDown {
+		onRightMouseDown(gameState)
+	}
+
+	if !isRightMousePressed && gameState.Controller.IsRightMouseDown {
+		onRightMouseUp(gameState)
+	}
 }
 
 func onLeftMouseDown(gameState *models.GameState) {
@@ -30,4 +40,18 @@ func onLeftMouseUp(gameState *models.GameState) {
 	gameState.Controller.IsLeftMouseDown = false
 	gameState.Controller.LeftMouseStartX = 0
 	gameState.Controller.LeftMouseStartY = 0
+}
+
+func onRightMouseDown(gameState *models.GameState) {
+	x, y := ebiten.CursorPosition()
+	gameState.Controller.IsRightMouseDown = true
+	gameState.Controller.RightMouseStartX = x
+	gameState.Controller.RightMouseStartY = y
+}
+
+func onRightMouseUp(gameState *models.GameState) {
+	SpawnParticleField(gameState.Controller.RightMouseStartX, gameState.Controller.RightMouseStartY, gameState)
+	gameState.Controller.IsRightMouseDown = false
+	gameState.Controller.RightMouseStartX = 0
+	gameState.Controller.RightMouseStartY = 0
 }
