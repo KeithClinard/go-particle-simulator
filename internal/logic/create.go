@@ -8,10 +8,10 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var particleFieldSize int = 100
+var particleFieldSize int = 1000
 var particleFieldCenterMass float64 = 10000.0
-var particleFieldDiskStart float64 = 100
-var particleFieldDiskDistance float64 = 1
+var particleFieldDiskStart float64 = 70
+var particleFieldDiskDistance float64 = 0.5
 
 func SpawnNewParticle(x, y int, gameState *models.GameState) {
 	x1, y1 := ebiten.CursorPosition()
