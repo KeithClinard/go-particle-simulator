@@ -22,11 +22,14 @@ func init() {
 func DrawParticles(gameState *models.GameState, screen *ebiten.Image) {
 	for _, particle := range gameState.Particles {
 		particleDrawOptions.GeoM.Reset()
-		particleScaleFactor := particle.Size / 100
+		particleScaleFactor := particle.Size / 100.0
 		particleDrawOptions.GeoM.Scale(particleScaleFactor, particleScaleFactor)
-		particleRadius := 0 - particle.Size/2
+		particleRadius := 0 - particle.Size/2.0
 		particleDrawOptions.GeoM.Translate(particleRadius, particleRadius)
 		particleDrawOptions.GeoM.Translate(particle.Position.X, particle.Position.Y)
+
+		particleDrawOptions.ColorM.Reset()
+		particleDrawOptions.ColorM.Scale(1, 1-particleScaleFactor, 1-particleScaleFactor, 1)
 		screen.DrawImage(particleSprite, particleDrawOptions)
 	}
 }

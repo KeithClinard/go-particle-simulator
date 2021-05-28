@@ -26,7 +26,9 @@ func (game *Game) Update() error {
 		logic.ApplyGravity(game.gameState)
 	}
 	logic.MoveAllParticles(game.gameState)
-	logic.DestroyOutOfBounds(game.gameState)
+	logic.DetectOutOfBounds(game.gameState)
+	logic.HandleCollision(game.gameState)
+	logic.DestroyParticles(game.gameState)
 	tickCounter++
 	return nil
 }
