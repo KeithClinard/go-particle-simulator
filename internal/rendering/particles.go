@@ -9,6 +9,7 @@ import (
 )
 
 var particleSprite *ebiten.Image
+var planetDrawOptions = &ebiten.DrawImageOptions{}
 var particleDrawOptions = &ebiten.DrawImageOptions{}
 
 func init() {
@@ -17,19 +18,30 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	planetDrawOptions.ColorM.Scale(1, 0, 0, 1)
+
+	particleDrawOptions.GeoM.Scale(.04, .04)
 }
 
 func DrawParticles(gameState *models.GameState, screen *ebiten.Image) {
 	for _, particle := range gameState.Particles {
-		particleDrawOptions.GeoM.Reset()
-		particleScaleFactor := particle.Size / 100.0
-		particleDrawOptions.GeoM.Scale(particleScaleFactor, particleScaleFactor)
-		particleRadius := 0 - particle.Size/2.0
-		particleDrawOptions.GeoM.Translate(particleRadius, particleRadius)
-		particleDrawOptions.GeoM.Translate(particle.Position.X, particle.Position.Y)
-
-		particleDrawOptions.ColorM.Reset()
-		particleDrawOptions.ColorM.Scale(1, 1-particleScaleFactor, 1-particleScaleFactor, 1)
-		screen.DrawImage(particleSprite, particleDrawOptions)
+		drawParticle(particle, screen)
 	}
+	for _, particle := range gameState.Planets {
+		drawPlanet(particle, screen)
+	}
+}
+
+func drawPlanet(particle *models.Particle, screen *ebiten.Image) {
+	planetDrawOptions.GeoM.Reset()
+	particleRadius := 0 - particle.Size/2.0
+	planetDrawOptions.GeoM.Translate(particle.Position.X+particleRadius, particle.Position.Y+particleRadius)
+	screen.DrawImage(particleSprite, planetDrawOptions)
+}
+
+func drawParticle(particle *models.Particle, screen *ebiten.Image) {
+	particleDrawOptions.GeoM.Reset()
+	particleDrawOptions.GeoM.Scale(.04, .04)
+	particleDrawOptions.GeoM.Translate(particle.Position.X-2, particle.Position.Y-2)
+	screen.DrawImage(particleSprite, particleDrawOptions)
 }

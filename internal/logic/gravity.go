@@ -6,40 +6,18 @@ import (
 
 var gravitationalConstant = 1000.0
 var maxAllowedAcceleration = 100.0
-var particleSizeDiffConstant = 10.0
-
-func MoveAllParticles(gameState *models.GameState) {
-	for _, particle := range gameState.Particles {
-		particle.Move()
-	}
-}
 
 func ApplyGravity(gameState *models.GameState) {
 	ResetAcceleration(gameState.Particles)
 
-	numParticles := len(gameState.Particles)
-	for i := 0; i < numParticles-1; i++ {
-		particle1 := gameState.Particles[i]
-		for j := i + 1; j < numParticles; j++ {
-			particle2 := gameState.Particles[j]
-			displacement := particle2.Position.Clone().Subtract(*particle1.Position)
+	for _, particle := range gameState.Particles {
+		for _, planet := range gameState.Planets {
+			displacement := planet.Position.Clone().Subtract(*particle.Position)
 			displacementSquared := displacement.LengthSquared()
-			particle1IsMuchBigger := particle1.Mass/particle2.Mass > particleSizeDiffConstant
-			particle2IsMuchBigger := particle2.Mass/particle1.Mass > particleSizeDiffConstant
-
-			if !particle1IsMuchBigger {
-				displacementDirection1 := displacement.Clone().Normalize()
-				accelerationMagnitude1 := (gravitationalConstant * particle2.Mass) / displacementSquared
-				acceleration1 := displacementDirection1.MultiplyScalar(accelerationMagnitude1)
-				particle1.Acceleration.Add(*acceleration1)
-			}
-
-			if !particle2IsMuchBigger {
-				displacementDirection2 := displacement.Clone().Normalize().Reverse()
-				accelerationMagnitude2 := (gravitationalConstant * particle1.Mass) / displacementSquared
-				acceleration2 := displacementDirection2.MultiplyScalar(accelerationMagnitude2)
-				particle2.Acceleration.Add(*acceleration2)
-			}
+			displacementDirection := displacement.Clone().Normalize()
+			accelerationMagnitude := (gravitationalConstant * planet.Mass) / displacementSquared
+			acceleration1 := displacementDirection.MultiplyScalar(accelerationMagnitude)
+			particle.Acceleration.Add(*acceleration1)
 		}
 	}
 
