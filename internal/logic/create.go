@@ -8,10 +8,10 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var particleFieldSize int = 1000
+var particleFieldSize int = 10000
 var particleFieldCenterMass float64 = 10000.0
-var particleFieldDiskStart float64 = 70
-var particleFieldDiskDistance float64 = 0.5
+var particleFieldDiskStart float64 = 50
+var particleFieldDiskDistance float64 = 0.01
 
 func SpawnNewParticle(x, y int, gameState *models.GameState) {
 	x1, y1 := ebiten.CursorPosition()
@@ -34,8 +34,22 @@ func spawnParticle(x, y, velX, velY float64, gameState *models.GameState) *model
 	return particle
 }
 
+func spawnPlanet(x, y, velX, velY float64, gameState *models.GameState) *models.Particle {
+	position := &models.Vector{
+		X: x,
+		Y: y,
+	}
+	velocity := &models.Vector{
+		X: velX,
+		Y: velY,
+	}
+	particle := models.NewParticle(position, velocity)
+	gameState.Planets = append(gameState.Planets, particle)
+	return particle
+}
+
 func SpawnParticleField(x, y int, gameState *models.GameState) {
-	centerParticle := spawnParticle(float64(x), float64(y), 0.0, 0.0, gameState)
+	centerParticle := spawnPlanet(float64(x), float64(y), 0.0, 0.0, gameState)
 	centerParticle.Mass = particleFieldCenterMass
 	centerParticle.UpdateSize()
 

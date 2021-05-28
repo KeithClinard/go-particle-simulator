@@ -5,7 +5,11 @@ import (
 )
 
 func DestroyParticles(gameState *models.GameState) {
-	oldParticleList := gameState.Particles
+	gameState.Particles = destroyParticlesInList(gameState.Particles)
+	gameState.Planets = destroyParticlesInList(gameState.Planets)
+}
+
+func destroyParticlesInList(oldParticleList []*models.Particle) []*models.Particle {
 	newParticleList := oldParticleList[:0]
 
 	for _, particle := range oldParticleList {
@@ -16,5 +20,5 @@ func DestroyParticles(gameState *models.GameState) {
 	for i := len(newParticleList); i < len(oldParticleList); i++ {
 		oldParticleList[i] = nil
 	}
-	gameState.Particles = newParticleList
+	return newParticleList
 }

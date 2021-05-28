@@ -25,9 +25,11 @@ func (game *Game) Update() error {
 	if tickCounter%gravityFrequencyConstant == 0 {
 		logic.ApplyGravity(game.gameState)
 	}
-	logic.MoveAllParticles(game.gameState)
+	for _, particle := range game.gameState.Particles {
+		particle.Move()
+	}
 	logic.DetectOutOfBounds(game.gameState)
-	logic.HandleCollision(game.gameState)
+	//logic.HandleCollision(game.gameState)
 	logic.DestroyParticles(game.gameState)
 	tickCounter++
 	return nil
@@ -49,6 +51,7 @@ func InitializeGameObject() *Game {
 	return &Game{
 		gameState: &models.GameState{
 			ShowDebugInfo: true,
+			Planets:       make([]*models.Particle, 0),
 			Particles:     make([]*models.Particle, 0),
 			Controller:    new(models.Controller),
 		},
